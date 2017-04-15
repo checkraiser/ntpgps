@@ -7,3 +7,11 @@ gem "rake"
 gem "json"
 gem "sinatra-websocket"
 gem "jwt"
+gem "tux"
+gem "rack-contrib"
+gem "sinatra-contrib", :require => false
+group :test do
+  gem 'capybara'
+  gem 'spinach'
+  gem 'rspec'
+end
