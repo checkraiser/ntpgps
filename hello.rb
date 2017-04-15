@@ -6,20 +6,37 @@ require 'sinatra-websocket'
 require 'json'
 require "sinatra/activerecord"
 
-set :database, {adapter: "sqlite3", database: "foo.sqlite3"}
+Dir["./models/*.rb"].each {|file| require file }
+Dir["./services/*.rb"].each {|file| require file }
 
+set :database, {adapter: "sqlite3", database: "foo.sqlite3"}
+set :show_exceptions, false
 set :server, 'thin'
 set :sockets, []
+set :signing_key, NtpJwt.keys[:signing_key]
+set :verify_key, NtpJwt.keys[:verify_key]
+
+helpers do 
+  def params
+    JsonHelper.parse_json(request)
+  end
+end
+
+
+post '/users' do 
+  puts params["email"]
+  puts params["password"]
+
+end
 
 post '/login' do
-  puts "hello"
-  params = JSON.parse(request.env["rack.input"].read)
   puts params["email"]
   puts params["password"]
 end
 
-get '/' do
+get '/gps/mobile' do
   if !request.websocket?
+
     erb :index
   else
     request.websocket do |ws|
@@ -36,6 +53,10 @@ get '/' do
       end
     end
   end
+end
+
+error 400..510 do
+
 end
 
 __END__
