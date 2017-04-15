@@ -12,15 +12,19 @@ use Rack::PostBodyContentTypeParser
 Dir["./models/*.rb"].each {|file| require file }
 Dir["./services/*.rb"].each {|file| require file }
 
-set :database, {adapter: "sqlite3", database: "foo.sqlite3"}
-set :show_exceptions, false
+set :root, File.join(File.dirname(__FILE__), '..')
 set :server, 'thin'
 set :sockets, []
+
+register Config
+set :database, {adapter: "sqlite3", database: "foo_#{ENV['RACK_ENV']}.sqlite3"}
+set :show_exceptions, false
+
 set :signing_key, NtpJwt.keys[:signing_key]
 set :verify_key, NtpJwt.keys[:verify_key]
 enable :sessions
 set :session_secret, 'super secret' 
-set :root, File.join(File.dirname(__FILE__), '..')
+
 # sets the view directory correctly
 set :views, Proc.new { File.join(root, "views") } 
 
@@ -30,9 +34,15 @@ helpers do
   end
 
   def protected!
-    return if AuthHelper.authorized?(request, settings)
+    return if AuthHelper.authorized?(request, settings, session)
     redirect to('/login')
   end
+end
+
+post '/test' do 
+  p params
+  t = AuthHelper.extract_token(request, session)
+  json hehe: t
 end
 
 get '/' do 

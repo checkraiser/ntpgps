@@ -1,7 +1,7 @@
 module AuthHelper
   # helper to extract the token from the session, header or request param
   # if we are building an api, we would obviously want to handle header or request param
-  def extract_token(request)
+  def self.extract_token(request, session)
     # check for the access_token header
     token = request.env["access_token"]
     
@@ -27,10 +27,9 @@ module AuthHelper
   end
 
   # check the token to make sure it is valid with our public key
-  def authorized?(request, settings)
-    token = extract_token(request)
+  def self.authorized?(token, verify_key)
     begin
-      payload, header = JWT.decode(token, settings.verify_key, true)
+      payload, header = JWT.decode(token, verify_key, true)
       
       exp = header["exp"]
 
@@ -53,5 +52,13 @@ module AuthHelper
     rescue JWT::DecodeError => e
       return false
     end
+  end
+
+  def self.encode(signing_key, user)
+    headers = {
+      exp: Time.now.to_i + 20 #expire in 20 seconds
+    }
+
+    JWT.encode({user_id: user.id}, signing_key, "RS256", headers)
   end
 end

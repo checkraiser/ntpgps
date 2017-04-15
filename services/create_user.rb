@@ -1,4 +1,7 @@
+require_relative 'transactional'
+
 class CreateUser
+  include Transactional
   attr_reader :params
 
   def initialize(params)
@@ -7,8 +10,10 @@ class CreateUser
   end
 
   def call
-  	guard!
-  	execute!
+  	with_db do 
+  	  guard!  	
+  	  execute!
+  	end
   end
 
   private
@@ -22,6 +27,8 @@ class CreateUser
   end
 
   def execute!
-  	true
+  	User.create email: params["email"],
+  				name: params["name"],
+  				password: params["password"]
   end
 end
