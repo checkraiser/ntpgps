@@ -1,4 +1,4 @@
-Feature: Feature test
+Feature: Test Feature
 
   Scenario: Hello world
     Given I am on the front page

@@ -12,10 +12,14 @@ gem "rack-contrib"
 gem "sinatra-contrib", :require => false
 gem 'config'
 gem 'bcrypt'
+gem 'hashie'
+gem 'activesupport'
 group :test do
   gem 'capybara'
   gem 'spinach'
   gem 'rspec'
   gem 'factory_girl'
   gem 'faker'
+  gem 'database_cleaner'
+  gem 'timecop'
 end

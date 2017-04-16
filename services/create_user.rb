@@ -1,34 +1,23 @@
-require_relative 'transactional'
+require_relative "base_service"
 
-class CreateUser
-  include Transactional
-  attr_reader :params
-
-  def initialize(params)
-  	@params = params
-  	validate! params
-  end
-
-  def call
-  	with_db do 
-  	  guard!  	
-  	  execute!
-  	end
-  end
+class CreateUser < BaseService
+  property :name, required: true
+  property :email, required: :email?
+  property :password, required: :min_lenght?
 
   private
 
-  def validate!
+  def email?
   	true
   end
 
-  def guard!
+  def min_length?
   	true
   end
 
   def execute!
-  	User.create email: params["email"],
-  				name: params["name"],
-  				password: params["password"]
+  	User.create! email: email,
+  				 name: name,
+  				 password: password
   end
 end
